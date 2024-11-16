@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const TelegramBot = require('node-telegram-bot-api');
 const cors = require('cors');
 require('dotenv').config();
 
@@ -24,6 +25,16 @@ app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ error: 'Something went wrong!' });
 });
+
+const webAppUrl = 'https://win-chain.vercel.app/';
+const bot = new TelegramBot(process.env.TOKEN, { polling: true });
+bot.onText(/\/start/, (msg) => {
+    bot.sendMessage(msg.chat.id, 'Welcome!', {
+      reply_markup: {
+        keyboard: [[{ text: 'Open App', web_app: { url: webAppUrl } }]],
+      },
+    });
+  });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
